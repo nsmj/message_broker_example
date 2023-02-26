@@ -1,3 +1,5 @@
+version: "3"
+
 services:
   web:
     build: .
@@ -5,7 +7,10 @@ services:
       - "8080:8080"
     command: npm start
   rabbitmq:
-    image: rabbitmq:3.11.9-management-alpine
+    image: rabbitmq:3.11-management-alpine
+    hostname: my-rabbit
+    volumes:
+      - ./data:/var/lib/rabbitmq/mnesia/
     ports:
       - 5672:5672
       - 15672:15672
