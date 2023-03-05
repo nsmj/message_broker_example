@@ -12,6 +12,32 @@ app.get("/", (req, res) => {
   res.json({ username: "Initial page" });
 });
 
+app.get("/send_with_parameter/:param", (req, res) => {
+  amqp.connect("amqp://rabbitmq:5672", function (error0, connection) {
+    if (error0) {
+      throw error0;
+    }
+    connection.createChannel(function (error1, channel) {
+      if (error1) {
+        throw error1;
+      }
+      var queue = "hello";
+      var msg = "Hello world" + req.params["param"];
+
+      channel.assertQueue(queue, {
+        durable: true,
+      });
+
+      channel.sendToQueue(queue, Buffer.from(msg), {
+        persistent: true,
+      });
+      console.log(" [x] Sent %s", msg);
+    });
+  });
+
+  res.send("Finished");
+});
+
 app.get("/send", (req, res) => {
   amqp.connect("amqp://rabbitmq:5672", function (error0, connection) {
     if (error0) {

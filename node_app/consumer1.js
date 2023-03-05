@@ -14,14 +14,24 @@ amqp.connect("amqp://localhost:5672", function (error0, connection) {
       durable: true,
     });
 
+    channel.prefetch(1);
+
     console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
+
     channel.consume(
       queue,
       (msg) => {
+        var secs = msg.content.toString().split(".").length - 1;
+
         console.log(" [x] Received %s", msg.content.toString());
+
+        setTimeout(() => {
+          console.log(" [x] Done");
+          channel.ack(msg);
+        }, secs * 1000);
       },
       {
-        noAck: true,
+        noAck: false,
       }
     );
   });
